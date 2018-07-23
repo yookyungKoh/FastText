@@ -1,2 +1,6 @@
 data/
 *.swp
+*.pyc
+_pycache_/
+checkpoints/
+
