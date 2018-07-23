@@ -65,50 +65,47 @@ optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 bigram_vectorizer = CountVectorizer(ngram_range=(1,2), min_df=0, tokenizer=word_tokenize, vocabulary=word2idx)
 
 # train
-#start_time = time.time()
-#iteration = len(train_text) // batch_size
-#for epoch in range(num_epochs):
-#
-#    running_loss = 0.
-#    correct = 0.
-#    total = 0.
-#    # get mini-batch inputs and targets
-#    for i in range(iteration):
-#        inputs = bigram_vectorizer.fit_transform(train_text[i*batch_size:(i+1)*batch_size]).toarray()
-#        targets = np.asarray(train_target[i*batch_size:(i+1)*batch_size])
-#
-#        # normalize 
-##        inputs = inputs / np.sum(inputs)
-#        inputs = Variable(torch.from_numpy(inputs).type(torch.FloatTensor)).to(device)
-#        targets = Variable(torch.from_numpy(targets).type(torch.LongTensor)).to(device)
-#
-##        print('input shape:',inputs.size())
-##        print('target shape:',targets.size())
-#
-#        # forward
-#        outputs = model(inputs)
-#        loss = criterion(outputs, targets)
-#
-#        # backward
-#        model.zero_grad()
-#        loss.backward()
-#        optimizer.step()
-#        
-#        running_loss += loss.item() / iteration
-#        total += targets.size(0)
-#
-#        correct += (torch.max(outputs.data, 1)[1] == targets.data).sum().item()
-#        accuracy = correct / total * 100
-#
-#        # log
-#        if (i+1) % 50 == 0:
-#                print('Epoch [%d/%d] | Step [%d/%d] | Loss: %.4f | Accuracy: %.4f | time: %.2f'
-#                % (epoch+1, num_epochs, i+1, iteration, running_loss, accuracy, time.time()-start_time))
-#    
-#    print('----------Epoch %d: %ss' % (epoch+1, time.time()-start_time))
-#    # save model per epoch
-#    torch.save(model.state_dict(), './checkpoints/model_{}.pth'.format(epoch+1))
-#
+start_time = time.time()
+iteration = len(train_text) // batch_size
+for epoch in range(num_epochs):
+
+    running_loss = 0.
+    correct = 0.
+    total = 0.
+    # get mini-batch inputs and targets
+    for i in range(iteration):
+        inputs = bigram_vectorizer.fit_transform(train_text[i*batch_size:(i+1)*batch_size]).toarray()
+        targets = np.asarray(train_target[i*batch_size:(i+1)*batch_size])
+
+        # normalize 
+#        inputs = inputs / np.sum(inputs)
+        inputs = Variable(torch.from_numpy(inputs).type(torch.FloatTensor)).to(device)
+        targets = Variable(torch.from_numpy(targets).type(torch.LongTensor)).to(device)
+        
+        # forward
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
+
+        # backward
+        model.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        running_loss += loss.item() / iteration
+        total += targets.size(0)
+
+        correct += (torch.max(outputs.data, 1)[1] == targets.data).sum().item()
+        accuracy = correct / total * 100
+
+        # log
+        if (i+1) % 50 == 0:
+                print('Epoch [%d/%d] | Step [%d/%d] | Loss: %.4f | Accuracy: %.4f | time: %.2f'
+                % (epoch+1, num_epochs, i+1, iteration, running_loss, accuracy, time.time()-start_time))
+    
+    print('----------Epoch %d: %ss' % (epoch+1, time.time()-start_time))
+    # save model per epoch
+    torch.save(model.state_dict(), './checkpoints/model_{}.pth'.format(epoch+1))
+
 
 # load model
 model.load_state_dict(torch.load('./checkpoints/model_5.pth'))
